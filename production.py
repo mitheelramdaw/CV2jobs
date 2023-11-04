@@ -92,9 +92,24 @@ def main():
 
     # Create a sidebar with a title and an "About Us" section
     with st.sidebar:
+        # st.markdown("---")
         st.title("🧭 CareerCompass")  # Add a compass emoji to the title
         st.write("Welcome to CareerCompass, your personal career guide!")
         st.write("We help you find the most suitable job opportunities based on the similarity between your CV and job descriptions.")
+        st.markdown("---")
+
+        st.markdown("# 💀 Cheat Code")
+
+        # Create a button with a light bulb emoji to display team members
+        if st.button("💡 Show Team Members"):
+            st.markdown("👤 Mitheel Ramdaw")
+            st.markdown("👤 Ryan Chitate")
+            st.markdown("👤 Mikhaar Ramdaw")
+            st.markdown("👤 Laeeka Adams")
+            st.markdown("👤 Swift")
+            st.markdown("👤 TJ")
+
+        st.markdown("---")
 
     # Use emojis for a playful touch
     st.title("📄 **Upload CVs**")
