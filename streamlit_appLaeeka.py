@@ -1,4 +1,6 @@
-import streamlit as st 
+import streamlit as st  
+import streamlit as st
+from streamlit_lottie import st_lottie
 
 st.set_page_config(page_title="CV", page_icon=":tada:", layout="wide")
 
@@ -26,18 +28,31 @@ with st.container():
 with st.container():
     st.subheader("Experience")
     selected_option = st.selectbox("Select an option:", ["1-2yrs", "3-5yrs", "5-10yrs", "10yrs+"])
-    st.write("I have been working for:")
+    st.write("I have been working for:", selected_option)
     
 with st.container():
     st.subheader("Skills")
     user_info = st.text_area("Enter your skills:")
     st.write(user_info)
+    st.write("Some of my skills are:") 
     
 with st.container():
     st.subheader("Interests")
     user_info = st.text_area("Enter your interests:")
     st.write(user_info)
     st.write("Some of my interests include:")    
+    
+with st.container():
+    
+    st.subheader("Documents")
+    image = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+
+if image is not None:
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+    
+st.write("Please upload any supporting documents here")
+
+
     
     
     
