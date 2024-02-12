@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the spaCy model
+# USE THIS IF PRODUCTION BREAKS (_LG NOT WORK )
 nlp = spacy.load("en_core_web_sm")
+# nlp = spacy.load("en_core_web_lg") USE THIS IF PRODUCTION BREAKS (_SM NOT WORK )
 
 # Sample job descriptions (converted to lowercase)
 job_descriptions = [
