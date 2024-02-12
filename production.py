@@ -1,15 +1,13 @@
 import streamlit as st
-import spacy
+import sqlite3
+import matplotlib.pyplot as plt
 from PyPDF2 import PdfReader
 from io import BytesIO
 import re
-import matplotlib.pyplot as plt
-import seaborn as sns
+import spacy
 
 # Load the spaCy model
-# USE THIS IF PRODUCTION BREAKS (_LG NOT WORK )
-nlp = spacy.load("en_core_web_sm")
-# nlp = spacy.load("en_core_web_lg") USE THIS IF PRODUCTION BREAKS (_SM NOT WORK )
+nlp = spacy.load("en_core_web_lg")
 
 # Sample job descriptions (converted to lowercase)
 job_descriptions = [
@@ -19,8 +17,6 @@ job_descriptions = [
 ]
 
 # Function to calculate similarity between two texts
-
-
 def calculate_similarity(text1, text2):
     doc1 = nlp(text1)
     doc2 = nlp(text2)
@@ -28,8 +24,6 @@ def calculate_similarity(text1, text2):
     return similarity * 100  # Convert similarity score to a percentage
 
 # Function to extract text from a PDF file
-
-
 def extract_text_from_pdf(pdf_file):
     text = ""
     pdf_reader = PdfReader(pdf_file)
@@ -39,8 +33,6 @@ def extract_text_from_pdf(pdf_file):
     return text
 
 # Function to preprocess and clean text
-
-
 def preprocess_text(text):
     # Convert to lowercase
     text = text.lower()
@@ -60,8 +52,6 @@ def preprocess_text(text):
     return cleaned_text
 
 # Function to rank jobs based on CV similarity
-
-
 def rank_jobs(uploaded_cvs, uploaded_filenames):
     ranked_jobs = []
     for cv, filename in zip(uploaded_cvs, uploaded_filenames):
@@ -82,37 +72,103 @@ def rank_jobs(uploaded_cvs, uploaded_filenames):
 
     return ranked_jobs
 
+# Function to create a database connection
+def create_connection(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+    except sqlite3.Error as e:
+        print(e)
+    return conn
 
-def main():
-    st.title("🧭 CareerCompass")
+# Function to create a user table
+def create_table(conn):
+    create_table_sql = """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        password TEXT NOT NULL
+    );
+    """
+    try:
+        c = conn.cursor()
+        c.execute(create_table_sql)
+    except sqlite3.Error as e:
+        print(e)
 
-    # Add section header for CV upload
+# Function to insert a new user
+def insert_user(conn, username, password):
+    insert_user_sql = """
+    INSERT INTO users (username, password) VALUES (?, ?)
+    """
+    try:
+        c = conn.cursor()
+        c.execute(insert_user_sql, (username, password))
+        conn.commit()
+        return c.lastrowid
+    except sqlite3.Error as e:
+        print(e)
+
+# Function to check if a user exists
+def check_user(conn, username, password):
+    check_user_sql = """
+    SELECT * FROM users WHERE username=? AND password=?
+    """
+    try:
+        c = conn.cursor()
+        c.execute(check_user_sql, (username, password))
+        user = c.fetchone()
+        if user:
+            return True
+        else:
+            return False
+    except sqlite3.Error as e:
+        print(e)
+
+# Function for login/signup page
+def login_signup_page():
+    conn = create_connection("users.db")
+    if conn is not None:
+        create_table(conn)
+
+        st.title("Login/Signup Page")
+
+        # Sidebar for login/signup forms
+        login_signup = st.sidebar.radio("Login/Signup", ("Login", "Signup"))
+
+        if login_signup == "Login":
+            st.subheader("Login")
+            username = st.text_input("Username")
+            password = st.text_input("Password", type="password")
+            login_button = st.button("Login")
+            if login_button:
+                if check_user(conn, username, password):
+                    st.success("Login successful!")
+                    return True  # Return True to indicate successful login
+                else:
+                    st.error("Invalid username or password")
+        elif login_signup == "Signup":
+            st.subheader("Signup")
+            new_username = st.text_input("New Username")
+            new_password = st.text_input("New Password", type="password")
+            signup_button = st.button("Signup")
+            if signup_button:
+                if insert_user(conn, new_username, new_password):
+                    st.success("Signup successful! You can now login.")
+                else:
+                    st.error("Error signing up. Please try again.")
+
+    else:
+        st.error("Error creating database connection")
+    return False  # Return False to indicate unsuccessful login
+
+# Function for main content page
+def main_content_page():
+    st.title("Main Content")
     st.write("## ✍️ CV Ranking System")
 
     # Add a break for spacing
     st.markdown("---")
-
-    # Create a sidebar with a title and an "About Us" section
-    with st.sidebar:
-        # st.markdown("---")
-        st.title("🧭 CareerCompass")  # Add a compass emoji to the title
-        st.write("Welcome to CareerCompass, your personal career guide!")
-        st.write("We help you find the most suitable job opportunities based on the similarity between your CV and job descriptions.")
-        st.markdown("---")
-
-        st.markdown("# 💀 Cheat Code")
-
-        # Create a button with a light bulb emoji to display team members
-        if st.button("💡 Show Team Members"):
-            st.markdown("👤 Mitheel Ramdaw")
-            st.markdown("👤 Ryan Chitate")
-            st.markdown("👤 Mikhaar Ramdaw")
-            st.markdown("👤 Laeeka Adams")
-
-        st.markdown("---")
-
-    # Use emojis for a playful touch
-    st.title("📄 **Upload CVs**")
 
     # Style the file uploader button with a background color
     uploaded_files = st.file_uploader(
@@ -174,6 +230,11 @@ def main():
 
         st.markdown("---")
 
+# Main function
+def main():
+    if login_signup_page():
+        st.empty()  # Clear the content of the page
+        main_content_page()
 
 if __name__ == "__main__":
     main()
