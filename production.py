@@ -149,25 +149,32 @@ def main():
             st.write("")
             # st.markdown("---")
 
-            # Customize the line graph with a darker color and white text
-            fig, ax = plt.subplots()
+            # Customize the bar plot
+            plt.figure(figsize=(10, 6))
             job_numbers = [
                 f"Job {j + 1}" for j in range(len(ranked_job['job_scores']))]
             similarity_scores = [job['similarity_score']
                                  for job in ranked_job['job_scores']]
+            sns.set_style("darkgrid")
+            sns.set_palette(["c", "m", "r"])  # Cyan, Magenta, Red
 
-            # Set a stylish and modern dark theme
-            plt.style.use('seaborn-darkgrid')
+            ax = sns.barplot(x=job_numbers, y=similarity_scores)
+            ax.set(xlabel='Jobs', ylabel='Similarity Score',
+                   title=f'Similarity Scores for CV: {ranked_job["cv_filename"].split(".pdf")[0]}')
 
-            # Customize the line graph with a darker color
-            ax.plot(job_numbers, similarity_scores,
-                    marker='o', linestyle='-', color='#1f77b4')
-            ax.set_xlabel('Jobs', color='white')
-            ax.set_ylabel('Similarity Score', color='white')
-            ax.set_title(
-                f'Similarity Scores for CV: {ranked_job["cv_filename"].split(".pdf")[0]}', color='white')
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+
+            # Set x-axis label color to white
+            ax.xaxis.label.set_color('white')
+            # Set y-axis label color to white
+            ax.yaxis.label.set_color('white')
+            ax.title.set_color('white')  # Set title color to white
+            # Set x-axis tick label color to white
             ax.tick_params(axis='x', colors='white')
+            # Set y-axis tick label color to white
             ax.tick_params(axis='y', colors='white')
+            fig = plt.gcf()
+            fig.set_facecolor('black')
 
             st.pyplot(fig)
             plt.close()
