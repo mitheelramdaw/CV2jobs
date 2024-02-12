@@ -108,8 +108,6 @@ def main():
             st.markdown("👤 Ryan Chitate")
             st.markdown("👤 Mikhaar Ramdaw")
             st.markdown("👤 Laeeka Adams")
-            st.markdown("👤 Swift")
-            st.markdown("👤 TJ")
 
         st.markdown("---")
 
