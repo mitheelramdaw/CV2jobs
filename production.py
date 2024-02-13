@@ -31,6 +31,8 @@ A drive to learn and master new technologies and techniques. ''',
 ]
 
 # Function to calculate similarity between two texts
+
+
 def calculate_similarity(text1, text2):
     doc1 = nlp(text1)
     doc2 = nlp(text2)
@@ -38,6 +40,8 @@ def calculate_similarity(text1, text2):
     return similarity * 100  # Convert similarity score to a percentage
 
 # Function to extract text from a PDF file
+
+
 def extract_text_from_pdf(pdf_file):
     text = ""
     pdf_reader = PdfReader(pdf_file)
@@ -47,6 +51,8 @@ def extract_text_from_pdf(pdf_file):
     return text
 
 # Function to preprocess and clean text
+
+
 def preprocess_text(text):
     text = text.lower()  # Convert to lowercase
     # Remove special characters and punctuation
@@ -58,6 +64,8 @@ def preprocess_text(text):
     return cleaned_text
 
 # Function to rank jobs based on CV similarity
+
+
 def rank_jobs(uploaded_cvs, uploaded_filenames):
     ranked_jobs = []
     for cv, filename in zip(uploaded_cvs, uploaded_filenames):
@@ -71,6 +79,7 @@ def rank_jobs(uploaded_cvs, uploaded_filenames):
             job_scores.append(similarity_score)
         ranked_jobs.append({"cv_filename": filename, "job_scores": job_scores})
     return ranked_jobs
+
 
 def main():
     st.title("🧭 CareerCompass")
@@ -117,14 +126,17 @@ def main():
             plt.figure(figsize=(10, 6))
             ax = sns.barplot(
                 x=list(range(1, len(job_scores) + 1)), y=job_scores, palette=['red', 'blue', 'purple', 'green', 'orange'])
-            plt.title("Job Similarity Scores")
-            plt.xlabel("Job")
-            plt.ylabel("Similarity Score (%)")
+            plt.title("Job Similarity Scores", color='white')
+            plt.xlabel("Job", color='white')
+            plt.ylabel("Similarity Score (%)", color='white')
             plt.ylim(0, 100)
-            plt.xticks(ticks=list(range(0, len(job_scores) + 1)))
+            plt.xticks(ticks=list(range(0, len(job_scores) + 1)), color='white')
+            plt.yticks(color='white')
+            plt.style.use('dark_background')
             # Adding labels on top of bars
             for idx, score in enumerate(job_scores):
-                ax.text(idx, score + 1, f"{score:.2f}%", ha="center")
+                ax.text(idx, score + 1, f"{score:.2f}%",
+                        ha="center", color='white')
             st.pyplot(plt)
             st.write("")
 
