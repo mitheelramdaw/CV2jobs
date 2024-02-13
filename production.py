@@ -7,20 +7,30 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the spaCy model
-# USE THIS IF PRODUCTION BREAKS (_LG NOT WORK )
 nlp = spacy.load("en_core_web_sm")
-# nlp = spacy.load("en_core_web_lg") USE THIS IF PRODUCTION BREAKS (_SM NOT WORK )
 
 # Sample job descriptions (converted to lowercase)
 job_descriptions = [
     "we are looking for a software engineer with experience in python.",
-    "hiring a data analyst with strong SQL skills.",
+    ''' Data Analyst – Excel expert
+
+The company is based in - Enterprise Park, Enterprise Way, Cape Farms, Cape Town
+
+The ideal candidate is adept at using large data sets to find insights and opportunities to enable business growth for our clients. We are looking for a detail-oriented, problem-solver who has proven capability to deliver business insights drawn from data.
+
+Qualifications & Experience
+
+At least three years in a support function in research, working intensively with Excel spreadsheets.
+At least an undergraduate degree in accounting, statistics, econometrics or other quantitative field.
+Outstanding Excel skills from basic functions through to entry-level macro programming.
+Able to produce graphs, tables, and other visual representations of data in an insightful and meaningful way.
+Strong problem-solving skills
+Excellent written and verbal communication skills for coordinating across teams.
+A drive to learn and master new technologies and techniques. ''',
     "seeking a marketing manager with social media expertise.",
 ]
 
 # Function to calculate similarity between two texts
-
-
 def calculate_similarity(text1, text2):
     doc1 = nlp(text1)
     doc2 = nlp(text2)
@@ -28,8 +38,6 @@ def calculate_similarity(text1, text2):
     return similarity * 100  # Convert similarity score to a percentage
 
 # Function to extract text from a PDF file
-
-
 def extract_text_from_pdf(pdf_file):
     text = ""
     pdf_reader = PdfReader(pdf_file)
@@ -39,29 +47,17 @@ def extract_text_from_pdf(pdf_file):
     return text
 
 # Function to preprocess and clean text
-
-
 def preprocess_text(text):
-    # Convert to lowercase
-    text = text.lower()
-
+    text = text.lower()  # Convert to lowercase
     # Remove special characters and punctuation
     text = re.sub(r'[^a-zA-Z0-9\s]', '', text)
-
-    # Tokenize the text using spaCy
     doc = nlp(text)
-
-    # Remove stop words and lemmatize tokens
+    # Tokenize, remove stop words, and lemmatize
     tokens = [token.lemma_ for token in doc if not token.is_stop]
-
-    # Join the tokens back into a string
-    cleaned_text = " ".join(tokens)
-
+    cleaned_text = " ".join(tokens)  # Join the tokens back into a string
     return cleaned_text
 
 # Function to rank jobs based on CV similarity
-
-
 def rank_jobs(uploaded_cvs, uploaded_filenames):
     ranked_jobs = []
     for cv, filename in zip(uploaded_cvs, uploaded_filenames):
@@ -70,57 +66,35 @@ def rank_jobs(uploaded_cvs, uploaded_filenames):
         for i, job_desc in enumerate(job_descriptions):
             # Preprocess and clean the job description text
             job_desc_cleaned = preprocess_text(job_desc)
-
             similarity_score = calculate_similarity(
                 cv_cleaned, job_desc_cleaned)
-            job_scores.append(
-                {"job_description": job_desc, "similarity_score": similarity_score}
-            )
-        job_scores = sorted(
-            job_scores, key=lambda x: x["similarity_score"], reverse=True)
+            job_scores.append(similarity_score)
         ranked_jobs.append({"cv_filename": filename, "job_scores": job_scores})
-
     return ranked_jobs
-
 
 def main():
     st.title("🧭 CareerCompass")
-
-    # Add section header for CV upload
     st.write("## ✍️ CV Ranking System")
-
-    # Add a break for spacing
     st.markdown("---")
 
-    # Create a sidebar with a title and an "About Us" section
     with st.sidebar:
-        # st.markdown("---")
-        st.title("🧭 CareerCompass")  # Add a compass emoji to the title
+        st.title("🧭 CareerCompass")
         st.write("Welcome to CareerCompass, your personal career guide!")
         st.write("We help you find the most suitable job opportunities based on the similarity between your CV and job descriptions.")
         st.markdown("---")
-
         st.markdown("# 💀 Cheat Code")
-
-        # Create a button with a light bulb emoji to display team members
         if st.button("💡 Show Team Members"):
             st.markdown("👤 Mitheel Ramdaw")
             st.markdown("👤 Ryan Chitate")
             st.markdown("👤 Mikhaar Ramdaw")
             st.markdown("👤 Laeeka Adams")
-
         st.markdown("---")
 
-    # Use emojis for a playful touch
     st.title("📄 **Upload CVs**")
-
-    # Style the file uploader button with a background color
     uploaded_files = st.file_uploader(
         "Upload PDFs", type=["pdf"], accept_multiple_files=True, key="cv_upload")
-
     st.write("")
 
-    # Style the "Rank Jobs" button with a blue background
     if st.button("Rank Jobs", key="rank_button") and uploaded_files:
         uploaded_cvs = []
         uploaded_filenames = []
@@ -130,49 +104,29 @@ def main():
             uploaded_filenames.append(uploaded_file.name)
 
         st.write("")
-
-        # Calculate similarity and rank jobs
         ranked_jobs = rank_jobs(uploaded_cvs, uploaded_filenames)
 
-        # Create a horizontal rule for separation
-        # st.markdown("---")
-
-        # Style the CV subheaders with emojis and container layout
         for i, ranked_job in enumerate(ranked_jobs):
             st.markdown("---")
             st.write(f"📃 **CV: {ranked_job['cv_filename'].split('.pdf')[0]}**")
-
-            # Use emojis to style the job list
-            for j, job in enumerate(ranked_job['job_scores']):
+            job_scores = ranked_job['job_scores']
+            for j, job_desc in enumerate(job_descriptions):
                 st.write(
-                    f"👉 **Job {j + 1}**: {job['job_description']} (Similarity: {job['similarity_score']:.2f}%)")
+                    f"👉 **Job {j + 1}**: {job_desc} (Similarity: {job_scores[j]:.2f}%)")
+            # Plotting
+            plt.figure(figsize=(10, 6))
+            ax = sns.barplot(
+                x=list(range(1, len(job_scores) + 1)), y=job_scores, palette=['red', 'blue', 'purple', 'green', 'orange'])
+            plt.title("Job Similarity Scores")
+            plt.xlabel("Job")
+            plt.ylabel("Similarity Score (%)")
+            plt.ylim(0, 100)
+            plt.xticks(ticks=list(range(0, len(job_scores) + 1)))
+            # Adding labels on top of bars
+            for idx, score in enumerate(job_scores):
+                ax.text(idx, score + 1, f"{score:.2f}%", ha="center")
+            st.pyplot(plt)
             st.write("")
-            # st.markdown("---")
-
-            # Customize the line graph with a darker color and white text
-            fig, ax = plt.subplots()
-            job_numbers = [
-                f"Job {j + 1}" for j in range(len(ranked_job['job_scores']))]
-            similarity_scores = [job['similarity_score']
-                                 for job in ranked_job['job_scores']]
-
-            # Set a stylish and modern dark theme
-            plt.style.use('seaborn-darkgrid')
-
-            # Customize the line graph with a darker color
-            ax.plot(job_numbers, similarity_scores,
-                    marker='o', linestyle='-', color='#1f77b4')
-            ax.set_xlabel('Jobs', color='white')
-            ax.set_ylabel('Similarity Score', color='white')
-            ax.set_title(
-                f'Similarity Scores for CV: {ranked_job["cv_filename"].split(".pdf")[0]}', color='white')
-            ax.tick_params(axis='x', colors='white')
-            ax.tick_params(axis='y', colors='white')
-
-            st.pyplot(fig)
-            plt.close()
-
-        st.markdown("---")
 
 
 if __name__ == "__main__":
