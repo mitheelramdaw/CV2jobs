@@ -14,8 +14,6 @@ job_descriptions = [
     "we are looking for a software engineer with experience in python.",
     ''' Data Analyst – Excel expert
 
-The company is based in - Enterprise Park, Enterprise Way, Cape Farms, Cape Town
-
 The ideal candidate is adept at using large data sets to find insights and opportunities to enable business growth for our clients. We are looking for a detail-oriented, problem-solver who has proven capability to deliver business insights drawn from data.
 
 Qualifications & Experience
