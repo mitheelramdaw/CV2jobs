@@ -97,6 +97,7 @@ def main():
             st.markdown("👤 Ryan Chitate")
             st.markdown("👤 Mikhaar Ramdaw")
             st.markdown("👤 Laeeka Adams")
+            st.markdown("👤 Swift Rankapole")
         st.markdown("---")
 
     st.title("📄 **Upload CVs**")
