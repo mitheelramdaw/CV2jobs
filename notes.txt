@@ -1,0 +1,5 @@
+By moving plt.style.use('dark_background') to the beginning of the main() function,
+it ensures that the dark background is applied before any figures are created. 
+This should resolve the issue of the first graph having a white background.
+
+changes made from production.py to app.py
