@@ -1,3 +1,4 @@
+#using python 3.10 for compatability
 import streamlit as st
 import spacy
 from PyPDF2 import PdfReader
