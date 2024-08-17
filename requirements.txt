@@ -1,7 +1,6 @@
 pip==24.2
 streamlit==1.24.0
 spacy == 3.7
-thinc==<8.3.0 and >=8.2.2
 # spacy>=2.2.0,<4.0.0
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.0/en_core_web_sm-2.2.0.tar.gz#egg=en_core_web_sm
 PyPDF2==3.0.1
