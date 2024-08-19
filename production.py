@@ -9,10 +9,10 @@ import subprocess
 import sys
 
 # Install the spaCy model
-subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
+subprocess.run([sys.executable, "-m", "spacy", "download", "en_core_web_md"])
 
 # Load the spaCy model
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_md")
 
 
 # Sample job descriptions (converted to lowercase)
