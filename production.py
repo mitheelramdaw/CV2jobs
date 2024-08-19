@@ -86,6 +86,8 @@ def rank_jobs(uploaded_cvs, uploaded_filenames):
 
 
 def main():
+    plt.style.use('dark_background')
+    
     st.title("🧭 CareerCompass")
     st.write("## ✍️ CV Ranking System")
     st.markdown("---")
@@ -137,7 +139,6 @@ def main():
             plt.ylim(0, 100)
             plt.xticks(ticks=list(range(0, len(job_scores) + 1)), color='white')
             plt.yticks(color='white')
-            plt.style.use('dark_background')
             # Adding labels on top of bars
             for idx, score in enumerate(job_scores):
                 ax.text(idx, score + 1, f"{score:.2f}%",
